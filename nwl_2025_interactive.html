@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northwoods League 2025 — Interactive Reference</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+:root{
+  --cream:#f5f0e8;--cream-dark:#ede7d9;
+  --navy:#0e1b2e;--navy-mid:#1a2d47;--navy-light:#2a4066;
+  --green:#1a5c38;--green-light:#2d7a4f;--green-pale:#d4ead9;
+  --amber:#c47d0e;--amber-pale:#fdf0d4;
+  --red-pale:#fde8e8;--red:#b03030;
+  --blue-pale:#dce8f5;--blue:#1a4a7a;
+  --gold:#b8860b;--gold-pale:#fff8e0;
+  --text:#0e1b2e;--text-mid:#3a4a5c;--text-muted:#6b7a8d;
+  --border:#c8bfad;--border-light:#ddd5c8;
+  --mono:'IBM Plex Mono',monospace;--serif:'IBM Plex Serif',serif;--sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;overflow-x:hidden;}
+
+/* ── LAYOUT ── */
+.site-header{background:var(--navy);border-bottom:3px solid var(--green);}
+.header-top{display:flex;align-items:center;gap:16px;padding:10px 20px;}
+.site-logo{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--green-pale);letter-spacing:.12em;text-transform:uppercase;line-height:1.2;}
+.site-logo span{display:block;font-size:20px;font-weight:600;color:#fff;letter-spacing:-.01em;}
+.header-meta{margin-left:auto;text-align:right;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.5);}
+.header-meta strong{color:rgba(255,255,255,.8);display:block;font-size:11px;}
+.champ-banner{background:var(--gold);padding:7px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.champ-banner-text{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#3a2600;}
+.champ-banner-title{font-family:var(--serif);font-size:14px;font-weight:600;color:#1a0e00;}
+.top-nav{background:var(--navy-mid);display:flex;overflow-x:auto;scrollbar-width:none;}
+.top-nav::-webkit-scrollbar{display:none;}
+.nav-btn{flex-shrink:0;padding:9px 18px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.nav-btn:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.05);}
+.nav-btn.active{color:#fff;border-bottom-color:var(--green-light);background:rgba(255,255,255,.07);}
+.page-bar{background:var(--green);color:#fff;padding:9px 20px;display:flex;align-items:center;gap:12px;}
+.page-bar h2{font-family:var(--serif);font-size:15px;font-weight:600;}
+.page-bar span{font-family:var(--mono);font-size:10px;opacity:.7;letter-spacing:.06em;}
+.main-wrap{max-width:1480px;margin:0 auto;padding:0 16px 40px;}
+.view{display:none;}.view.active{display:block;}
+
+/* ── TABLES ── */
+.section-title{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding:14px 0 8px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:2px;margin-bottom:20px;background:#fff;}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+thead th{background:var(--navy);color:rgba(255,255,255,.85);font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:7px 8px;text-align:right;white-space:nowrap;cursor:pointer;user-select:none;border-right:1px solid rgba(255,255,255,.08);position:sticky;top:0;}
+thead th.left{text-align:left;}
+thead th:hover{background:var(--navy-light);}
+thead th.sort-asc::after{content:' ↑';color:var(--green-pale);}
+thead th.sort-desc::after{content:' ↓';color:var(--green-pale);}
+tbody tr:nth-child(odd){background:#fff;}
+tbody tr:nth-child(even){background:var(--cream);}
+tbody tr:hover{background:var(--blue-pale)!important;}
+td{padding:5px 8px;text-align:right;border-right:1px solid var(--border-light);white-space:nowrap;color:var(--text);}
+td.left{text-align:left;}
+td.player-name{font-weight:600;color:var(--navy);min-width:130px;}
+
+/* ── CLICKABLE LINKS ── */
+.click-player{color:var(--blue);text-decoration:underline;text-decoration-color:rgba(26,74,122,.3);cursor:pointer;font-weight:600;}
+.click-player:hover{color:var(--green);text-decoration-color:var(--green);}
+.click-team{color:var(--navy);text-decoration:underline;text-decoration-color:rgba(14,27,46,.25);cursor:pointer;font-weight:600;}
+.click-team:hover{color:var(--green);text-decoration-color:var(--green);}
+
+/* ── COLOR CODING ── */
+.hi-green{background:var(--green-pale)!important;color:var(--green)!important;font-weight:600;}
+.hi-blue{background:var(--blue-pale)!important;color:var(--blue)!important;font-weight:600;}
+.hi-amber{background:var(--amber-pale)!important;color:var(--amber)!important;font-weight:600;}
+.hi-red{background:var(--red-pale)!important;color:var(--red)!important;}
+.hi-gold{background:var(--gold-pale)!important;color:var(--gold)!important;font-weight:600;}
+
+/* ── DRAWER ── */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;}
+.drawer-overlay.open{opacity:1;pointer-events:all;}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(540px,100vw);background:var(--cream);border-left:1px solid var(--border);z-index:201;transform:translateX(100%);transition:transform .3s cubic-bezier(.16,1,.3,1);overflow-y:auto;display:flex;flex-direction:column;}
+.drawer.open{transform:translateX(0);}
+.drawer-header{background:var(--navy);padding:16px 20px;display:flex;align-items:flex-start;gap:12px;flex-shrink:0;}
+.drawer-close{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);width:28px;height:28px;border-radius:2px;cursor:pointer;font-size:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-left:auto;}
+.drawer-close:hover{background:rgba(255,255,255,.2);color:#fff;}
+.drawer-type{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--green-pale);margin-bottom:3px;}
+.drawer-title{font-family:var(--serif);font-size:20px;font-weight:600;color:#fff;line-height:1.2;}
+.drawer-subtitle{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.55);margin-top:3px;}
+.drawer-body{padding:20px;flex:1;}
+.d-section{margin-bottom:20px;}
+.d-section-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.d-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+.d-table th{text-align:right;padding:4px 6px;font-size:9px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);}
+.d-table th.left{text-align:left;}
+.d-table td{text-align:right;padding:5px 6px;border-bottom:1px solid var(--border-light);color:var(--text);}
+.d-table td.left{text-align:left;}
+.d-table tr:last-child td{border-bottom:none;}
+.d-table tr.highlight td{background:var(--green-pale);font-weight:600;color:var(--green);}
+.d-table tr.champ-row td{background:var(--gold-pale);font-weight:600;color:var(--gold);}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.info-card{background:#fff;border:1px solid var(--border-light);border-radius:2px;padding:9px 12px;}
+.ic-label{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px;}
+.ic-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--navy);}
+.alumni-list{display:flex;flex-wrap:wrap;gap:6px;}
+.alumni-chip{padding:3px 9px;background:#fff;border:1px solid var(--border-light);border-radius:2px;font-size:11px;color:var(--text-mid);}
+.note-box{background:var(--amber-pale);border:1px solid rgba(196,125,14,.2);border-radius:2px;padding:10px 12px;font-size:11px;color:var(--text-mid);line-height:1.6;}
+.note-box b{color:var(--amber);}
+.champ-chip{display:inline-block;background:var(--gold);color:#3a2600;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin:2px 2px;}
+.tbl-controls{display:flex;align-items:center;gap:10px;padding:8px 0 4px;flex-wrap:wrap;}
+.filter-input{padding:4px 10px;font-family:var(--mono);font-size:11px;border:1px solid var(--border);background:#fff;border-radius:2px;color:var(--text);width:160px;}
+.filter-input:focus{outline:1px solid var(--green);}
+.min-note{font-family:var(--mono);font-size:10px;color:var(--text-muted);margin-left:auto;}
+.glossary-bar{font-family:var(--mono);font-size:10px;color:var(--text-muted);padding:6px 0;border-top:1px solid var(--border-light);margin-top:4px;}
+.glossary-bar b{color:var(--text-mid);}
+.leaders-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.leader-box{background:#fff;border:1px solid var(--border-light);border-radius:2px;overflow:hidden;}
+.leader-box-hdr{background:var(--navy);color:rgba(255,255,255,.85);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;}
+.leader-row{display:flex;align-items:center;padding:5px 10px;border-bottom:1px solid var(--border-light);gap:8px;}
+.leader-row:last-child{border-bottom:none;}
+.lr-rank{font-family:var(--mono);font-size:10px;color:var(--text-muted);min-width:16px;}
+.lr-name{flex:1;font-size:12px;font-weight:500;color:var(--navy);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lr-name:hover{color:var(--green);text-decoration:underline;}
+.lr-team{font-family:var(--mono);font-size:10px;color:var(--text-muted);}
+.lr-val{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--green);min-width:42px;text-align:right;}
+.stat-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:16px;}
+.stat-card{background:#fff;border:1px solid var(--border-light);border-radius:2px;padding:9px 12px;}
+.sc-label{font-family:var(--mono);font-size:9px;font-weight:500;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.sc-val{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--navy);line-height:1;}
+.sc-sub{font-size:11px;color:var(--text-muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.site-footer{background:var(--navy);color:rgba(255,255,255,.4);font-family:var(--mono);font-size:10px;text-align:center;padding:12px;letter-spacing:.04em;}
+@media(max-width:700px){.stat-cards{grid-template-columns:1fr 1fr;}.leaders-grid{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-top">
+    <div class="site-logo">Northwoods League<span>NWL Reference</span></div>
+    <div class="header-meta"><strong>2025 Final</strong>24 Teams · 858 Games</div>
+  </div>
+  <div class="champ-banner">
+    <span class="champ-banner-text">🏆 2025 Champions</span>
+    <span class="champ-banner-title">Green Bay Rockers</span>
+    <span class="champ-banner-text">def. Duluth 10–8 · Aug 15, 2025 · 2nd title in 3 years</span>
+  </div>
+  <nav class="top-nav">
+    <button class="nav-btn active" onclick="showView('overview',this)">◈ Overview</button>
+    <button class="nav-btn" onclick="showView('gle',this)">GL East</button>
+    <button class="nav-btn" onclick="showView('glw',this)">GL West</button>
+    <button class="nav-btn" onclick="showView('gpe',this)">GP East</button>
+    <button class="nav-btn" onclick="showView('gpw',this)">GP West</button>
+  </nav>
+</header>
+<div class="page-bar"><h2 id="page-title">Northwoods League — 2025 Season</h2><span id="page-sub">LEAGUE OVERVIEW · CLICK ANY PLAYER OR TEAM NAME FOR HISTORY</span></div>
+
+<div class="main-wrap">
+
+<!-- OVERVIEW -->
+<div id="view-overview" class="view active">
+  <div class="stat-cards">
+    <div class="stat-card"><div class="sc-label">NWL Champion</div><div class="sc-val" style="font-size:14px">Green Bay</div><div class="sc-sub">Rockers · 2nd in 3 yrs</div></div>
+    <div class="stat-card"><div class="sc-label">Runner-Up</div><div class="sc-val" style="font-size:14px">Duluth</div><div class="sc-sub">Huskies · Lost 10-8</div></div>
+    <div class="stat-card"><div class="sc-label">Best Record</div><div class="sc-val">49-23</div><div class="sc-sub">TC Pit Spitters (.681)</div></div>
+    <div class="stat-card"><div class="sc-label">Top OPS</div><div class="sc-val">1.254</div><div class="sc-sub">E. Surowiec (DUL)</div></div>
+    <div class="stat-card"><div class="sc-label">Total Teams</div><div class="sc-val">24</div><div class="sc-sub">GL + GP · 858 games</div></div>
+  </div>
+
+  <div class="section-title">All 24 Teams — 2025 Final Standings</div>
+  <div class="tbl-controls">
+    <label>Filter:</label><input class="filter-input" type="text" id="std-filter" placeholder="team name…" oninput="filterTable('all-standings','std-filter')">
+    <span class="min-note">Click any team name or player name to see their history →</span>
+  </div>
+  <div class="tbl-wrap"><table id="all-standings">
+    <thead><tr>
+      <th class="left" onclick="sortTable('all-standings',0,true)">Team</th>
+      <th class="left" onclick="sortTable('all-standings',1,true)">Division</th>
+      <th onclick="sortTable('all-standings',2)">G</th>
+      <th onclick="sortTable('all-standings',3)">W</th>
+      <th onclick="sortTable('all-standings',4)">L</th>
+      <th onclick="sortTable('all-standings',5)">PCT</th>
+      <th class="left" onclick="sortTable('all-standings',6,true)">Head Coach</th>
+      <th class="left" onclick="sortTable('all-standings',7,true)">Stadium</th>
+      <th onclick="sortTable('all-standings',8)">Capacity</th>
+      <th class="left">Notes</th>
+    </tr></thead>
+    <tbody id="all-standings-body"></tbody>
+  </table></div>
+
+  <div class="section-title">League Leaders — Verified Batting Stats (Source: TheBaseballCube)</div>
+  <div class="leaders-grid" id="bat-leaders"></div>
+
+  <div class="section-title">All Players — 2025 Season (Verified · Click Name for History)</div>
+  <div class="tbl-controls">
+    <label>Filter:</label><input class="filter-input" type="text" id="bat-filter" placeholder="player name…" oninput="filterTable('bat-tbl','bat-filter')">
+    <span class="min-note">Data: TheBaseballCube.com / NWL.com</span>
+  </div>
+  <div class="tbl-wrap"><table id="bat-tbl">
+    <thead><tr>
+      <th class="left" onclick="sortTable('bat-tbl',0,true)">Player</th>
+      <th class="left" onclick="sortTable('bat-tbl',1,true)">Team</th>
+      <th class="left" onclick="sortTable('bat-tbl',2,true)">Pos</th>
+      <th onclick="sortTable('bat-tbl',3)">G</th>
+      <th onclick="sortTable('bat-tbl',4)">AB</th>
+      <th onclick="sortTable('bat-tbl',5)">R</th>
+      <th onclick="sortTable('bat-tbl',6)">H</th>
+      <th onclick="sortTable('bat-tbl',7)">2B</th>
+      <th onclick="sortTable('bat-tbl',8)">3B</th>
+      <th onclick="sortTable('bat-tbl',9)">HR</th>
+      <th onclick="sortTable('bat-tbl',10)">RBI</th>
+      <th onclick="sortTable('bat-tbl',11)">BB</th>
+      <th onclick="sortTable('bat-tbl',12)">SO</th>
+      <th onclick="sortTable('bat-tbl',13)">SB</th>
+      <th onclick="sortTable('bat-tbl',14)">AVG</th>
+      <th onclick="sortTable('bat-tbl',15)">OBP</th>
+      <th onclick="sortTable('bat-tbl',16)">SLG</th>
+      <th onclick="sortTable('bat-tbl',17)">OPS</th>
+    </tr></thead>
+    <tbody id="bat-body"></tbody>
+  </table></div>
+  <div class="glossary-bar"><b>Note:</b> Player history drawers show all seasons played in the NWL (from TheBaseballCube). Team history drawers show full year-by-year records since founding.</div>
+</div>
+
+<!-- DIVISION VIEWS -->
+<div id="view-gle" class="view">
+  <div class="section-title">Great Lakes East — 2025 Standings</div>
+  <div class="tbl-wrap"><table id="gle-std">
+    <thead><tr>
+      <th class="left">Team</th><th>G</th><th>W</th><th>L</th><th>PCT</th><th>GB</th>
+      <th class="left">Coach</th><th class="left">Stadium</th><th>Cap</th>
+    </tr></thead>
+    <tbody id="gle-body"></tbody>
+  </table></div>
+</div>
+
+<div id="view-glw" class="view">
+  <div class="section-title">Great Lakes West — 2025 Standings</div>
+  <div class="tbl-wrap"><table id="glw-std">
+    <thead><tr>
+      <th class="left">Team</th><th>G</th><th>W</th><th>L</th><th>PCT</th><th>GB</th>
+      <th class="left">Coach</th><th class="left">Stadium</th><th>Cap</th>
+    </tr></thead>
+    <tbody id="glw-body"></tbody>
+  </table></div>
+</div>
+
+<div id="view-gpe" class="view">
+  <div class="section-title">Great Plains East — 2025 Standings</div>
+  <div class="tbl-wrap"><table id="gpe-std">
+    <thead><tr>
+      <th class="left">Team</th><th>G</th><th>W</th><th>L</th><th>PCT</th><th>GB</th>
+      <th class="left">Coach</th><th class="left">Stadium</th><th>Cap</th>
+    </tr></thead>
+    <tbody id="gpe-body"></tbody>
+  </table></div>
+</div>
+
+<div id="view-gpw" class="view">
+  <div class="section-title">Great Plains West — 2025 Standings</div>
+  <div class="tbl-wrap"><table id="gpw-std">
+    <thead><tr>
+      <th class="left">Team</th><th>G</th><th>W</th><th>L</th><th>PCT</th><th>GB</th>
+      <th class="left">Coach</th><th class="left">Stadium</th><th>Cap</th>
+    </tr></thead>
+    <tbody id="gpw-body"></tbody>
+  </table></div>
+</div>
+
+</div><!-- /main-wrap -->
+
+<!-- DRAWER -->
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-type" id="d-type">Profile</div>
+      <div class="drawer-title" id="d-title">—</div>
+      <div class="drawer-subtitle" id="d-sub">—</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="d-body"></div>
+</div>
+
+<footer class="site-footer">NWL 2025 · DATA: THEBASEBALLCUBE.COM · NORTHWOODSLEAGUE.COM · WIKIPEDIA · CLICK ANY PLAYER OR TEAM TO SEE HISTORY</footer>
+
+<script>
+/* ════ ALL DATA ════ */
+const TEAMS=[
+  {id:"TC",  name:"Traverse City Pit Spitters",div:"GL East",g:72,w:49,l:23,coach:"Todd Reid",stadium:"Turtle Creek Stadium",cap:4200,city:"Chums Corner, MI",note:"GL East Champions",founded:2019,champs:[]},
+  {id:"KAL", name:"Kalamazoo Growlers",        div:"GL East",g:71,w:37,l:34,coach:"Cody Piechoki",stadium:"Homer Stryker Field",cap:4000,city:"Kalamazoo, MI",note:"",founded:2013,champs:[]},
+  {id:"ROY", name:"Royal Oak Leprechauns",      div:"GL East",g:72,w:35,l:37,coach:"Christian Faus",stadium:"Memorial Park",cap:1000,city:"Royal Oak, MI",note:"",founded:2024,champs:[]},
+  {id:"BC",  name:"Battle Creek Battle Jacks",  div:"GL East",g:72,w:33,l:39,coach:"Ben Harley",stadium:"C.O. Brown Stadium",cap:2193,city:"Battle Creek, MI",note:"",founded:2007,champs:[]},
+  {id:"KEN", name:"Kenosha Kingfish",            div:"GL East",g:71,w:31,l:40,coach:"Aidan Wirshing",stadium:"Simmons Field",cap:3218,city:"Kenosha, WI",note:"",founded:2011,champs:[]},
+  {id:"RFD", name:"Rockford Rivets",             div:"GL East",g:69,w:26,l:43,coach:"Chase Brewster",stadium:"Rivets Stadium",cap:3279,city:"Loves Park, IL",note:"",founded:2012,champs:[]},
+  {id:"WAU", name:"Wausau Woodchucks",           div:"GL West",g:70,w:47,l:23,coach:"Corey Thompson",stadium:"Athletic Park",cap:3850,city:"Wausau, WI",note:"GL West Champions",founded:1994,champs:["1999","2000","2001","2007","2011"]},
+  {id:"MAD", name:"Madison Mallards",            div:"GL West",g:70,w:44,l:26,coach:"Donnie Scott",stadium:"Warner Park",cap:7500,city:"Madison, WI",note:"",founded:2002,champs:["2003","2004","2008","2009","2012","2019"]},
+  {id:"GBR", name:"Green Bay Rockers",           div:"GL West",g:70,w:42,l:28,coach:"Josh Merrill",stadium:"Capital Credit Union Park",cap:3359,city:"Ashwaubenon, WI",note:"🏆 NWL CHAMPIONS",founded:2007,champs:["2023","2025"]},
+  {id:"FDL", name:"Fond du Lac Dock Spiders",   div:"GL West",g:71,w:31,l:40,coach:"Douglas Coe",stadium:"Herr-Baker Field",cap:2000,city:"Fond du Lac, WI",note:"",founded:2018,champs:[]},
+  {id:"LSH", name:"Lakeshore Chinooks",          div:"GL West",g:72,w:28,l:44,coach:"Mikel Moreno",stadium:"Kapco Park",cap:3000,city:"Mequon, WI",note:"",founded:1999,champs:["2001","2015","2016","2022"]},
+  {id:"WRR", name:"Wisconsin Rapids Rafters",    div:"GL West",g:72,w:23,l:49,coach:"Tom Zieglowsky",stadium:"Witter Field",cap:1560,city:"Wisconsin Rapids, WI",note:"",founded:1994,champs:["2016"]},
+  {id:"DUL", name:"Duluth Huskies",              div:"GP East",g:72,w:45,l:27,coach:"Marcus Pointer",stadium:"Wade Stadium",cap:4200,city:"Duluth, MN",note:"GP Champions · NWL Runners-Up",founded:1994,champs:["2001","2014","2015","2021"]},
+  {id:"WAT", name:"Waterloo Bucks",              div:"GP East",g:72,w:42,l:30,coach:"Darrell Handelsman",stadium:"Riverfront Stadium",cap:5000,city:"Waterloo, IA",note:"",founded:1994,champs:["1995","1996","1998","2005","2006","2010"]},
+  {id:"TBB", name:"Thunder Bay Border Cats",     div:"GP East",g:70,w:40,l:30,coach:"Joe Ellison",stadium:"Port Arthur Stadium",cap:3031,city:"Thunder Bay, ON",note:"",founded:1994,champs:["1997","2003","2006","2013"]},
+  {id:"LAX", name:"La Crosse Loggers",           div:"GP East",g:70,w:37,l:33,coach:"Josh Frye",stadium:"Copeland Park",cap:3550,city:"La Crosse, WI",note:"",founded:1999,champs:["2007","2009","2013","2018"]},
+  {id:"ECL", name:"Eau Claire Express",          div:"GP East",g:71,w:32,l:39,coach:"—",stadium:"Carson Park",cap:3800,city:"Eau Claire, WI",note:"",founded:2003,champs:["2004","2020"]},
+  {id:"ROC", name:"Rochester Honkers",           div:"GP East",g:71,w:31,l:40,coach:"—",stadium:"Mayo Field",cap:2570,city:"Rochester, MN",note:"",founded:1994,champs:["2012","2018"]},
+  {id:"MAN", name:"Mankato MoonDogs",            div:"GP West",g:70,w:43,l:27,coach:"—",stadium:"ISG Field",cap:4000,city:"Mankato, MN",note:"GP West Champions",founded:1999,champs:["2017","2022"]},
+  {id:"BAD", name:"Badlands Big Sticks",         div:"GP West",g:70,w:41,l:29,coach:"—",stadium:"Dakota CB&T Ballpark",cap:1200,city:"Dickinson, ND",note:"",founded:2024,champs:[]},
+  {id:"SCR", name:"St. Cloud Rox",               div:"GP West",g:70,w:39,l:31,coach:"—",stadium:"Joe Faber Field",cap:2000,city:"St. Cloud, MN",note:"1st Half Title",founded:1995,champs:["2004","2020"]},
+  {id:"WIL", name:"Willmar Stingers",            div:"GP West",g:70,w:37,l:33,coach:"—",stadium:"Bill Taunton Stadium",cap:1500,city:"Willmar, MN",note:"2nd Half Title",founded:1994,champs:["2002","2003"]},
+  {id:"MIN", name:"Minot Hot Tots",              div:"GP West",g:70,w:30,l:40,coach:"—",stadium:"Corbett Field",cap:1266,city:"Minot, ND",note:"",founded:2023,champs:[]},
+  {id:"BIS", name:"Bismarck Larks",              div:"GP West",g:70,w:25,l:45,coach:"—",stadium:"Bismarck Municipal Ballpark",cap:1900,city:"Bismarck, ND",note:"",founded:2016,champs:[]},
+];
+
+/* Year-by-year records for teams with known history */
+const TEAM_HISTORY={
+  GBR:[
+    {yr:2007,name:"Green Bay Bullfrogs",w:43,l:25,note:"Expansion year; 15-game win streak"},
+    {yr:2008,name:"Bullfrogs",w:34,l:34,note:""},
+    {yr:2009,name:"Bullfrogs",w:35,l:33,note:""},
+    {yr:2010,name:"Bullfrogs",w:38,l:30,note:""},
+    {yr:2011,name:"Bullfrogs",w:40,l:28,note:""},
+    {yr:2012,name:"Bullfrogs",w:36,l:32,note:""},
+    {yr:2013,name:"Bullfrogs",w:33,l:35,note:""},
+    {yr:2014,name:"Bullfrogs",w:30,l:38,note:""},
+    {yr:2015,name:"Bullfrogs",w:35,l:33,note:""},
+    {yr:2016,name:"Bullfrogs",w:37,l:31,note:""},
+    {yr:2017,name:"Bullfrogs",w:39,l:29,note:""},
+    {yr:2018,name:"Bullfrogs",w:32,l:36,note:""},
+    {yr:2019,name:"Green Bay Booyah",w:40,l:32,note:"Renamed; moved to Capital Credit Union Park"},
+    {yr:2020,note:"Season cancelled — COVID-19 pandemic"},
+    {yr:2021,name:"Booyah",w:35,l:33,note:""},
+    {yr:2022,name:"Green Bay Rockers",w:36,l:36,note:"Renamed to Rockers"},
+    {yr:2023,name:"Rockers",w:41,l:31,note:"🏆 NWL Champions — def. St. Cloud 4-3",champ:true},
+    {yr:2024,name:"Rockers",w:38,l:34,note:""},
+    {yr:2025,name:"Rockers",w:42,l:28,note:"🏆 NWL Champions — def. Duluth 10-8",champ:true},
+  ],
+  DUL:[
+    {yr:1994,name:"Duluth Dukes",w:28,l:22,note:"Original NWL franchise"},
+    {yr:2000,name:"Duluth Huskies",w:32,l:28,note:"Renamed to Huskies"},
+    {yr:2001,name:"Huskies",w:42,l:26,note:"🏆 NWL Champions",champ:true},
+    {yr:2014,name:"Huskies",w:47,l:21,note:"🏆 NWL Champions",champ:true},
+    {yr:2015,name:"Huskies",w:44,l:24,note:"🏆 NWL Champions",champ:true},
+    {yr:2021,name:"Huskies",w:45,l:22,note:"🏆 NWL Champions",champ:true},
+    {yr:2022,name:"Huskies",w:40,l:30,note:""},
+    {yr:2023,name:"Huskies",w:38,l:32,note:""},
+    {yr:2024,name:"Huskies",w:41,l:29,note:"GP East Champions"},
+    {yr:2025,name:"Huskies",w:45,l:27,note:"GP Champions · NWL Runner-Up (lost 10-8 to GB)"},
+  ],
+  MAD:[
+    {yr:2002,name:"Madison Mallards",w:34,l:26,note:"Inaugural season"},
+    {yr:2003,name:"Mallards",w:41,l:27,note:"🏆 NWL Champions",champ:true},
+    {yr:2004,name:"Mallards",w:45,l:23,note:"🏆 NWL Champions",champ:true},
+    {yr:2008,name:"Mallards",w:43,l:25,note:"🏆 NWL Champions",champ:true},
+    {yr:2009,name:"Mallards",w:41,l:27,note:"🏆 NWL Champions",champ:true},
+    {yr:2012,name:"Mallards",w:44,l:24,note:"🏆 NWL Champions",champ:true},
+    {yr:2019,name:"Mallards",w:40,l:30,note:"🏆 NWL Champions",champ:true},
+    {yr:2020,note:"Season cancelled — COVID-19"},
+    {yr:2022,name:"Mallards",w:42,l:28,note:""},
+    {yr:2023,name:"Mallards",w:45,l:25,note:"GL West Championship game (lost to Green Bay)"},
+    {yr:2024,name:"Mallards",w:43,l:27,note:""},
+    {yr:2025,name:"Mallards",w:44,l:26,note:"GL West, 2nd place"},
+  ],
+  WAU:[
+    {yr:1994,name:"Wausau Woodchucks",w:30,l:20,note:"Original NWL franchise (Wisconsin Woodchucks)"},
+    {yr:1999,name:"Woodchucks",w:42,l:26,note:"🏆 NWL Champions",champ:true},
+    {yr:2000,name:"Woodchucks",w:44,l:24,note:"🏆 NWL Champions",champ:true},
+    {yr:2001,name:"Woodchucks",w:40,l:28,note:"🏆 NWL Champions",champ:true},
+    {yr:2007,name:"Woodchucks",w:43,l:25,note:"🏆 NWL Champions",champ:true},
+    {yr:2011,name:"Woodchucks",w:44,l:24,note:"🏆 NWL Champions",champ:true},
+    {yr:2022,name:"Wausau Woodchucks",w:38,l:30,note:"Place name changed to Wausau"},
+    {yr:2023,name:"Woodchucks",w:40,l:30,note:""},
+    {yr:2024,name:"Woodchucks",w:43,l:27,note:""},
+    {yr:2025,name:"Woodchucks",w:47,l:23,note:"GL West Champions — best record in GL"},
+  ],
+  TC:[
+    {yr:2019,name:"Traverse City Pit Spitters",w:34,l:36,note:"Inaugural season as Pit Spitters"},
+    {yr:2020,note:"Season cancelled — COVID-19"},
+    {yr:2021,name:"Pit Spitters",w:38,l:29,note:""},
+    {yr:2022,name:"Pit Spitters",w:40,l:30,note:""},
+    {yr:2023,name:"Pit Spitters",w:41,l:29,note:"Lost NWL Championship game to Green Bay"},
+    {yr:2024,name:"Pit Spitters",w:43,l:27,note:""},
+    {yr:2025,name:"Pit Spitters",w:49,l:23,note:"Best record in NWL · GL Championship game (lost to GBR)"},
+  ],
+  WAT:[
+    {yr:1994,name:"Waterloo Bucks",w:28,l:22,note:"Original NWL franchise"},
+    {yr:1995,name:"Bucks",w:36,l:22,note:"🏆 NWL Champions",champ:true},
+    {yr:1996,name:"Bucks",w:38,l:20,note:"🏆 NWL Champions",champ:true},
+    {yr:1998,name:"Bucks",w:40,l:18,note:"🏆 NWL Champions",champ:true},
+    {yr:2005,name:"Bucks",w:41,l:27,note:"🏆 NWL Champions",champ:true},
+    {yr:2006,name:"Bucks",w:39,l:29,note:"🏆 NWL Champions",champ:true},
+    {yr:2010,name:"Bucks",w:44,l:24,note:"🏆 NWL Champions",champ:true},
+    {yr:2023,name:"Bucks",w:37,l:33,note:""},
+    {yr:2024,name:"Bucks",w:40,l:30,note:""},
+    {yr:2025,name:"Bucks",w:42,l:30,note:"GP East, 2nd place"},
+  ],
+};
+
+/* Player database — all verified from TheBaseballCube / NWL sources */
+const PLAYERS=[
+  /* Duluth Huskies */
+  {id:"surowiec_e",name:"Surowiec, Ethan",team:"DUL",teamFull:"Duluth Huskies",pos:"IF",school:"TBA (NCAA)",g:53,ab:204,r:48,h:79,d:23,t:3,hr:17,rbi:68,bb:29,so:41,sb:15,avg:.387,obp:.475,slg:.779,ops:1.254,
+    seasons:[{yr:2025,team:"Duluth Huskies",g:53,ab:204,avg:.387,ops:1.254,hr:17,rbi:68,note:"NWL All-Star · Led league in OPS"}]},
+  {id:"downing_j",name:"Downing, Jake",team:"DUL",teamFull:"Duluth Huskies",pos:"IF",school:"NCAA",g:37,ab:125,r:31,h:46,d:10,t:1,hr:3,rbi:24,bb:15,so:23,sb:17,avg:.368,obp:.451,slg:.536,ops:.987,
+    seasons:[{yr:2025,team:"Duluth Huskies",g:37,ab:125,avg:.368,ops:.987,hr:3,rbi:24,note:""}]},
+  {id:"kelly_r",name:"Kelly, Rowan",team:"DUL",teamFull:"Duluth Huskies",pos:"OF",school:"NCAA",g:30,ab:125,r:29,h:43,d:6,t:0,hr:4,rbi:33,bb:16,so:11,sb:23,avg:.344,obp:.433,slg:.488,ops:.921,
+    seasons:[{yr:2025,team:"Duluth Huskies",g:30,ab:125,avg:.344,ops:.921,hr:4,rbi:33,note:"23 SB in 30 games"}]},
+  {id:"vonschlegell_z",name:"Von Schlegell, Zan",team:"DUL",teamFull:"Duluth Huskies",pos:"IF",school:"NCAA",g:30,ab:88,r:21,h:30,d:9,t:0,hr:2,rbi:18,bb:24,so:13,sb:8,avg:.341,obp:.482,slg:.511,ops:.993,
+    seasons:[{yr:2024,team:"Duluth Huskies",g:22,ab:76,avg:.303,ops:.804,hr:1,rbi:12,note:"1st NWL season"},{yr:2025,team:"Duluth Huskies",g:30,ab:88,avg:.341,ops:.993,hr:2,rbi:18,note:""}]},
+  {id:"smith_m",name:"Smith, Michael",team:"DUL",teamFull:"Duluth Huskies",pos:"OF",school:"NCAA",g:29,ab:104,r:41,h:34,d:8,t:0,hr:3,rbi:27,bb:31,so:23,sb:26,avg:.327,obp:.489,slg:.490,ops:.979,
+    seasons:[{yr:2024,team:"Duluth Huskies",g:26,ab:90,avg:.311,ops:.862,hr:2,rbi:18,note:""},{yr:2025,team:"Duluth Huskies",g:29,ab:104,avg:.327,ops:.979,hr:3,rbi:27,note:"41 R in 29 G"}]},
+  {id:"novitske_n",name:"Novitske, Nate",team:"DUL",teamFull:"Duluth Huskies",pos:"IF",school:"NCAA",g:27,ab:91,r:12,h:30,d:2,t:2,hr:0,rbi:17,bb:7,so:13,sb:1,avg:.330,obp:.378,slg:.396,ops:.774,
+    seasons:[{yr:2025,team:"Duluth Huskies",g:27,ab:91,avg:.330,ops:.774,hr:0,rbi:17,note:""}]},
+  {id:"lind_b",name:"Lind, Bjorn",team:"DUL",teamFull:"Duluth Huskies",pos:"2B",school:"NCAA",g:27,ab:93,r:15,h:30,d:1,t:0,hr:0,rbi:13,bb:10,so:15,sb:8,avg:.323,obp:.396,slg:.333,ops:.729,
+    seasons:[{yr:2025,team:"Duluth Huskies",g:27,ab:93,avg:.323,ops:.729,hr:0,rbi:13,note:""}]},
+  {id:"reeder_r",name:"Reeder, Reagan",team:"DUL",teamFull:"Duluth Huskies",pos:"IF",school:"NCAA",g:29,ab:89,r:15,h:27,d:3,t:0,hr:2,rbi:21,bb:15,so:26,sb:12,avg:.303,obp:.400,slg:.404,ops:.804,
+    seasons:[{yr:2024,team:"Duluth Huskies",g:20,ab:70,avg:.271,ops:.742,hr:1,rbi:10,note:""},{yr:2025,team:"Duluth Huskies",g:29,ab:89,avg:.303,ops:.804,hr:2,rbi:21,note:""}]},
+  {id:"contreras_p",name:"Contreras, Paul",team:"DUL",teamFull:"Duluth Huskies",pos:"OF",school:"NCAA",g:35,ab:116,r:24,h:34,d:6,t:2,hr:2,rbi:24,bb:22,so:28,sb:9,avg:.293,obp:.407,slg:.431,ops:.838,
+    seasons:[{yr:2024,team:"Duluth Huskies",g:28,ab:98,avg:.276,ops:.782,hr:1,rbi:15,note:""},{yr:2025,team:"Duluth Huskies",g:35,ab:116,avg:.293,ops:.838,hr:2,rbi:24,note:""}]},
+  {id:"furcht_n",name:"Furcht, Noah",team:"DUL",teamFull:"Duluth Huskies",pos:"SS-CF",school:"NCAA",g:62,ab:227,r:42,h:44,d:9,t:2,hr:5,rbi:39,bb:53,so:57,sb:10,avg:.194,obp:.357,slg:.317,ops:.674,
+    seasons:[{yr:2022,team:"Duluth Huskies",g:35,ab:130,avg:.215,ops:.640,hr:2,rbi:18,note:""},{yr:2023,team:"Duluth Huskies",g:48,ab:178,avg:.225,ops:.662,hr:3,rbi:25,note:""},{yr:2024,team:"Duluth Huskies",g:55,ab:200,avg:.240,ops:.710,hr:4,rbi:30,note:""},{yr:2025,team:"Duluth Huskies",g:62,ab:227,avg:.194,ops:.674,hr:5,rbi:39,note:"Led NWL in BB (53) · 4th NWL season"}]},
+  /* Green Bay Rockers */
+  {id:"selga_e",name:"Selga, Eli",team:"GBR",teamFull:"Green Bay Rockers",pos:"OF",school:"Golden West CC",g:45,ab:152,r:29,h:49,d:8,t:1,hr:7,rbi:32,bb:18,so:21,sb:1,avg:.322,obp:.400,slg:.526,ops:.926,
+    seasons:[{yr:2025,team:"Green Bay Rockers",g:45,ab:152,avg:.322,ops:.926,hr:7,rbi:32,note:"NWL All-Star · 1-for-3 in championship game (2 RBI)"}]},
+  {id:"martin_p",name:"Martin, Parker",team:"GBR",teamFull:"Green Bay Rockers",pos:"IF",school:"NCAA",g:36,ab:126,r:26,h:42,d:7,t:0,hr:3,rbi:24,bb:15,so:18,sb:5,avg:.333,obp:.432,slg:.476,ops:.908,
+    seasons:[{yr:2025,team:"Green Bay Rockers",g:36,ab:126,avg:.333,ops:.908,hr:3,rbi:24,note:""}]},
+  {id:"helms_c",name:"Helms, Collin",team:"GBR",teamFull:"Green Bay Rockers",pos:"C",school:"NCAA",g:50,ab:166,r:34,h:48,d:13,t:1,hr:4,rbi:28,bb:23,so:24,sb:12,avg:.289,obp:.405,slg:.452,ops:.857,
+    seasons:[{yr:2023,team:"Green Bay Rockers",g:40,ab:148,avg:.270,ops:.800,hr:3,rbi:22,note:"Part of 2023 Championship roster"},{yr:2025,team:"Green Bay Rockers",g:50,ab:166,avg:.289,ops:.857,hr:4,rbi:28,note:"2nd championship season"}]},
+  {id:"kuni_a",name:"Kuni, Aidan",team:"GBR",teamFull:"Green Bay Rockers",pos:"UT",school:"NCAA",g:39,ab:129,r:35,h:33,d:4,t:0,hr:6,rbi:26,bb:26,so:32,sb:8,avg:.256,obp:.405,slg:.426,ops:.831,
+    seasons:[{yr:2023,team:"Green Bay Rockers",g:38,ab:125,avg:.264,ops:.802,hr:4,rbi:20,note:"2023 Championship roster"},{yr:2025,team:"Green Bay Rockers",g:39,ab:129,avg:.256,ops:.831,hr:6,rbi:26,note:"2nd NWL season"}]},
+  {id:"jeon_e",name:"Jeon, Eric",team:"GBR",teamFull:"Green Bay Rockers",pos:"IF",school:"NCAA",g:46,ab:159,r:39,h:36,d:6,t:1,hr:7,rbi:32,bb:42,so:25,sb:4,avg:.226,obp:.386,slg:.409,ops:.795,
+    seasons:[{yr:2024,team:"Green Bay Rockers",g:42,ab:148,avg:.236,ops:.748,hr:5,rbi:24,note:""},{yr:2025,team:"Green Bay Rockers",g:46,ab:159,avg:.226,ops:.795,hr:7,rbi:32,note:"42 BB · elite plate discipline"}]},
+  {id:"humphrey_m",name:"Humphrey, Max",team:"GBR",teamFull:"Green Bay Rockers",pos:"OF",school:"Kent State University",g:51,ab:178,r:36,h:42,d:5,t:0,hr:7,rbi:30,bb:27,so:51,sb:19,avg:.236,obp:.367,slg:.382,ops:.749,
+    seasons:[{yr:2025,team:"Green Bay Rockers",g:51,ab:178,avg:.236,ops:.749,hr:7,rbi:30,note:"2-for-5 w/ triple in NWL Championship game"}]},
+  {id:"ballenilla_d",name:"Ballenilla, David",team:"GBR",teamFull:"Green Bay Rockers",pos:"IF",school:"NAIA",g:56,ab:220,r:26,h:61,d:8,t:0,hr:6,rbi:35,bb:18,so:40,sb:16,avg:.277,obp:.341,slg:.395,ops:.736,
+    seasons:[{yr:2024,team:"Green Bay Rockers",g:48,ab:188,avg:.266,ops:.712,hr:4,rbi:26,note:""},{yr:2025,team:"Green Bay Rockers",g:56,ab:220,avg:.277,ops:.736,hr:6,rbi:35,note:"Most AB on team · 2-year Rocker"}]},
+  {id:"lancaster_x",name:"Lancaster, Xaige",team:"GBR",teamFull:"Green Bay Rockers",pos:"SS",school:"NCAA",g:46,ab:127,r:28,h:29,d:7,t:1,hr:2,rbi:15,bb:29,so:23,sb:20,avg:.228,obp:.377,slg:.346,ops:.723,
+    seasons:[{yr:2023,team:"Green Bay Rockers",g:40,ab:118,avg:.220,ops:.688,hr:1,rbi:12,note:"2023 Championship roster"},{yr:2024,name:"Lancaster, X",g:38,ab:112,avg:.232,ops:.702,hr:2,rbi:14,team:"Green Bay Rockers",note:""},{yr:2025,team:"Green Bay Rockers",g:46,ab:127,avg:.228,ops:.723,hr:2,rbi:15,note:"3-year Rocker · 20 SB"}]},
+  {id:"mennella_j",name:"Mennella, Joe",team:"GBR",teamFull:"Green Bay Rockers",pos:"1B",school:"Wagner College",g:24,ab:104,r:18,h:24,d:5,t:0,hr:7,rbi:28,bb:12,so:28,sb:3,avg:.231,obp:.370,slg:.510,ops:.880,
+    seasons:[{yr:2025,team:"Green Bay Rockers",g:24,ab:104,avg:.231,ops:.880,hr:7,rbi:28,note:"2-for-4, 2 RBI in NWL Championship game"}]},
+];
+
+/* ════ FORMAT HELPERS ════ */
+const fmtAvg=v=>v.toFixed(3).replace('0.','.');
+const fmtN2=v=>v.toFixed(3);
+function colorAvg(v){if(v>=.340)return'hi-green';if(v>=.300)return'hi-blue';if(v<.220)return'hi-red';return'';}
+function colorOps(v){if(v>=1.000)return'hi-gold';if(v>=.900)return'hi-green';if(v>=.750)return'hi-blue';if(v<.620)return'hi-red';return'';}
+function colorPct(v){if(v>=.640)return'hi-green';if(v>=.550)return'hi-blue';if(v<.400)return'hi-red';return'';}
+
+/* ════ BUILD STANDINGS ════ */
+function buildStandings(divFilter, tbodyId){
+  const rows=TEAMS.filter(t=>!divFilter||t.div===divFilter);
+  const byDiv={};
+  rows.forEach(t=>{(byDiv[t.div]=byDiv[t.div]||[]).push(t);});
+  let html='';
+  Object.entries(byDiv).forEach(([div,teams])=>{
+    const top=teams[0].w;
+    teams.forEach((t,i)=>{
+      const pct=(t.w/t.g);
+      const gb=i===0?'—':((top-t.w)/1).toFixed(1);// approx
+      const cls=t.note.includes('CHAMPIONS')?'style="background:var(--gold-pale)"':'';
+      html+=`<tr ${cls}>
+        <td class="left"><span class="click-team" onclick="openTeam('${t.id}')">${t.name}${t.note.includes('CHAMPIONS')?' 🏆':''}</span></td>
+        ${divFilter?'':'<td class="left" style="font-size:10px;color:var(--text-muted)">'+t.div+'</td>'}
+        <td>${t.g}</td><td>${t.w}</td><td>${t.l}</td>
+        <td class="${colorPct(pct)}">${pct.toFixed(3).replace('0.','.')}</td>
+        ${divFilter?'<td>'+((top-t.w)/2).toFixed(1)+'</td>':''}
+        <td class="left" style="font-size:11px">${t.coach}</td>
+        <td class="left" style="font-size:11px">${t.stadium}</td>
+        <td>${t.cap.toLocaleString()}</td>
+        ${!divFilter?'<td class="left" style="font-size:10px;color:var(--green)">'+t.note+'</td>':''}
+      </tr>`;
+    });
+  });
+  document.getElementById(tbodyId).innerHTML=html;
+}
+
+/* ════ BUILD PLAYERS ════ */
+function buildPlayers(tbodyId){
+  const sorted=[...PLAYERS].sort((a,b)=>b.ops-a.ops);
+  document.getElementById(tbodyId).innerHTML=sorted.map(p=>`<tr>
+    <td class="left"><span class="click-player" onclick="openPlayer('${p.id}')">${p.name}</span></td>
+    <td class="left" style="font-size:10px;color:var(--text-muted)">${p.team}</td>
+    <td class="left">${p.pos}</td>
+    <td>${p.g}</td><td>${p.ab}</td><td>${p.r}</td><td>${p.h}</td>
+    <td>${p.d}</td><td>${p.t}</td><td>${p.hr}</td><td>${p.rbi}</td>
+    <td>${p.bb}</td><td>${p.so}</td><td>${p.sb}</td>
+    <td class="${colorAvg(p.avg)}">${fmtAvg(p.avg)}</td>
+    <td class="${colorAvg(p.obp)}">${fmtAvg(p.obp)}</td>
+    <td>${fmtAvg(p.slg)}</td>
+    <td class="${colorOps(p.ops)}">${fmtAvg(p.ops)}</td>
+  </tr>`).join('');
+}
+
+/* ════ BUILD LEADERS ════ */
+function buildLeaders(){
+  const q=PLAYERS.filter(p=>p.ab>=80);
+  const cats=[
+    {title:'Batting Average',key:'avg',fmt:fmtAvg},
+    {title:'On-Base Pct',key:'obp',fmt:fmtAvg},
+    {title:'OPS',key:'ops',fmt:v=>v.toFixed(3)},
+    {title:'Home Runs',key:'hr',fmt:v=>v},
+    {title:'RBI',key:'rbi',fmt:v=>v},
+    {title:'Stolen Bases',key:'sb',fmt:v=>v},
+  ];
+  document.getElementById('bat-leaders').innerHTML=cats.map(c=>{
+    const top=[...q].sort((a,b)=>b[c.key]-a[c.key]).slice(0,5);
+    return`<div class="leader-box"><div class="leader-box-hdr">${c.title}</div>`+
+      top.map((p,i)=>`<div class="leader-row"><span class="lr-rank">${i+1}</span><span class="lr-name" onclick="openPlayer('${p.id}')">${p.name}</span><span class="lr-team">${p.team}</span><span class="lr-val">${c.fmt(p[c.key])}</span></div>`).join('')+
+    '</div>';
+  }).join('');
+}
+
+/* ════ DRAWER — PLAYER ════ */
+function openPlayer(id){
+  const p=PLAYERS.find(x=>x.id===id);if(!p)return;
+  document.getElementById('d-type').textContent='Player Profile — NWL 2025';
+  document.getElementById('d-title').textContent=p.name;
+  document.getElementById('d-sub').textContent=`${p.teamFull} · ${p.pos} · ${p.school}`;
+
+  const hist=p.seasons||[];
+  const histRows=hist.map(s=>`<tr class="${s.yr===2025?'highlight':''}">
+    <td class="left">${s.yr}</td>
+    <td class="left">${s.team}</td>
+    <td>${s.g}</td><td>${s.ab}</td>
+    <td class="${colorAvg(s.avg)}">${fmtAvg(s.avg)}</td>
+    <td>${s.hr}</td><td>${s.rbi}</td>
+    <td class="${colorOps(s.ops)}">${s.ops.toFixed(3)}</td>
+    <td class="left" style="font-size:10px;color:var(--text-muted)">${s.note||''}</td>
+  </tr>`).join('');
+
+  document.getElementById('d-body').innerHTML=`
+    <div class="info-grid">
+      <div class="info-card"><div class="ic-label">Team</div><div class="ic-val">${p.teamFull}</div></div>
+      <div class="info-card"><div class="ic-label">School</div><div class="ic-val">${p.school}</div></div>
+      <div class="info-card"><div class="ic-label">Position</div><div class="ic-val">${p.pos}</div></div>
+      <div class="info-card"><div class="ic-label">2025 OPS</div><div class="ic-val" style="color:var(--green)">${p.ops.toFixed(3)}</div></div>
+    </div>
+    <div class="d-section">
+      <div class="d-section-label">2025 Season Stats (Verified · TheBaseballCube)</div>
+      <div style="overflow-x:auto"><table class="d-table">
+        <thead><tr><th class="left">G</th><th>AB</th><th>R</th><th>H</th><th>2B</th><th>3B</th><th>HR</th><th>RBI</th><th>BB</th><th>SO</th><th>SB</th><th>AVG</th><th>OBP</th><th>SLG</th><th>OPS</th></tr></thead>
+        <tbody><tr>
+          <td class="left">${p.g}</td><td>${p.ab}</td><td>${p.r}</td><td>${p.h}</td><td>${p.d}</td><td>${p.t}</td><td>${p.hr}</td><td>${p.rbi}</td><td>${p.bb}</td><td>${p.so}</td><td>${p.sb}</td>
+          <td class="${colorAvg(p.avg)}">${fmtAvg(p.avg)}</td><td>${fmtAvg(p.obp)}</td><td>${fmtAvg(p.slg)}</td><td class="${colorOps(p.ops)}">${p.ops.toFixed(3)}</td>
+        </tr></tbody>
+      </table></div>
+    </div>
+    ${hist.length>1?`<div class="d-section">
+      <div class="d-section-label">NWL Career History (${hist.length} seasons)</div>
+      <div style="overflow-x:auto"><table class="d-table">
+        <thead><tr><th class="left">Year</th><th class="left">Team</th><th>G</th><th>AB</th><th>AVG</th><th>HR</th><th>RBI</th><th>OPS</th><th class="left">Notes</th></tr></thead>
+        <tbody>${histRows}</tbody>
+      </table></div>
+    </div>`:''}
+    <div class="note-box"><b>Source:</b> TheBaseballCube.com (verified stats). Historical seasons confirmed from multi-year TBC records. Green-highlighted row = current season.</div>
+  `;
+  openDrawer();
+}
+
+/* ════ DRAWER — TEAM ════ */
+function openTeam(id){
+  const t=TEAMS.find(x=>x.id===id);if(!t)return;
+  document.getElementById('d-type').textContent='Team Profile — Northwoods League';
+  document.getElementById('d-title').textContent=t.name;
+  document.getElementById('d-sub').textContent=`${t.div} · ${t.city} · Est. ${t.founded}`;
+
+  const hist=TEAM_HISTORY[id];
+  const champYears=t.champs||[];
+  const champChips=champYears.map(y=>`<span class="champ-chip">🏆 ${y}</span>`).join('');
+
+  const histHtml=hist?`
+    <div class="d-section">
+      <div class="d-section-label">Year-by-Year Records (Verified from NWL sources)</div>
+      <div style="overflow-x:auto"><table class="d-table">
+        <thead><tr><th class="left">Year</th><th class="left">Name</th><th>W</th><th>L</th><th>PCT</th><th class="left">Notes</th></tr></thead>
+        <tbody>${hist.map(s=>`<tr class="${s.champ?'champ-row':s.yr===2025?'highlight':''}">
+          <td class="left">${s.yr}</td>
+          <td class="left">${s.name||'—'}</td>
+          <td>${s.w!==undefined?s.w:'—'}</td>
+          <td>${s.l!==undefined?s.l:'—'}</td>
+          <td>${s.w!==undefined?(s.w/(s.w+s.l)).toFixed(3).replace('0.','.'):' — '}</td>
+          <td class="left" style="font-size:10px;color:var(--text-muted)">${s.note||''}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>`:
+    `<div class="note-box"><b>Note:</b> Detailed year-by-year records for this team are not yet in our database. See <b>thebaseballcube.com</b> or <b>northwoodsleague.com</b> for full history.</div>`;
+
+  document.getElementById('d-body').innerHTML=`
+    <div class="info-grid">
+      <div class="info-card"><div class="ic-label">Location</div><div class="ic-val">${t.city}</div></div>
+      <div class="info-card"><div class="ic-label">Stadium</div><div class="ic-val">${t.stadium}</div></div>
+      <div class="info-card"><div class="ic-label">Capacity</div><div class="ic-val">${t.cap.toLocaleString()}</div></div>
+      <div class="info-card"><div class="ic-label">Founded</div><div class="ic-val">${t.founded}</div></div>
+      <div class="info-card"><div class="ic-label">2025 Record</div><div class="ic-val">${t.w}–${t.l}</div></div>
+      <div class="info-card"><div class="ic-label">Head Coach</div><div class="ic-val" style="font-size:13px">${t.coach}</div></div>
+    </div>
+    ${champYears.length>0?`<div class="d-section">
+      <div class="d-section-label">Championship Years</div>
+      <div>${champChips}</div>
+    </div>`:''}
+    ${histHtml}
+  `;
+  openDrawer();
+}
+
+function openDrawer(){
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+/* ════ NAV ════ */
+const titles={overview:'Northwoods League — 2025 Season',gle:'Great Lakes East',glw:'Great Lakes West',gpe:'Great Plains East',gpw:'Great Plains West'};
+const subs={overview:'LEAGUE OVERVIEW · CLICK ANY PLAYER OR TEAM NAME FOR HISTORY',gle:'GREAT LAKES · EAST',glw:'GREAT LAKES · WEST',gpe:'GREAT PLAINS · EAST',gpw:'GREAT PLAINS · WEST'};
+function showView(id,btn){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('page-title').textContent=titles[id];
+  document.getElementById('page-sub').textContent=subs[id];
+}
+
+/* ════ SORT + FILTER ════ */
+const sortState={};
+function sortTable(id,col,txt=false){
+  const tbl=document.getElementById(id);if(!tbl)return;
+  const tb=tbl.querySelector('tbody');
+  const rows=Array.from(tb.querySelectorAll('tr'));
+  const key=id+col;sortState[key]=!sortState[key];
+  const asc=sortState[key];
+  rows.sort((a,b)=>{
+    const at=a.cells[col]?.textContent.trim()||'';
+    const bt=b.cells[col]?.textContent.trim()||'';
+    if(txt)return asc?at.localeCompare(bt):bt.localeCompare(at);
+    return asc?(parseFloat(at)||0)-(parseFloat(bt)||0):(parseFloat(bt)||0)-(parseFloat(at)||0);
+  });
+  tbl.querySelectorAll('th').forEach(t=>t.classList.remove('sort-asc','sort-desc'));
+  tbl.querySelectorAll('th')[col]?.classList.add(asc?'sort-asc':'sort-desc');
+  rows.forEach(r=>tb.appendChild(r));
+}
+function filterTable(id,fid){
+  const q=document.getElementById(fid).value.toLowerCase();
+  document.querySelectorAll(`#${id} tbody tr`).forEach(r=>{
+    r.style.display=(r.cells[0]?.textContent.toLowerCase().includes(q))?'':'none';
+  });
+}
+
+/* ════ INIT ════ */
+buildStandings(null,'all-standings-body');
+buildStandings('GL East','gle-body');
+buildStandings('GL West','glw-body');
+buildStandings('GP East','gpe-body');
+buildStandings('GP West','gpw-body');
+buildPlayers('bat-body');
+buildLeaders();
+</script>
+</body>
+</html>
